@@ -1,0 +1,43 @@
+/* Home page styles */
+section { max-width: 1100px; margin: 28px auto; padding: 0 20px; font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial; color:#0f172a; }
+h3 { margin-bottom: 16px; font-size:1.2rem; }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 8px 20px rgba(2,6,23,0.06);
+  border: 1px solid rgba(15,23,42,0.04);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  min-height: 220px;
+}
+
+.card img {
+  width: 100%;
+  height: 140px;
+  object-fit: contain;
+  background: #f8fafc;
+  border-radius: 8px;
+}
+
+.card h4 { margin: 10px 0 4px; font-size:1rem; color:#0b1220; }
+.card p { margin: 0; color:#065f46; font-weight:700; }
+
+.error { color:#b91c1c; }
+
+/* responsive */
+@media (max-width: 980px) {
+  .grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 520px) {
+  .grid { grid-template-columns: 1fr; }
+  .card img { height: 160px; }
+}

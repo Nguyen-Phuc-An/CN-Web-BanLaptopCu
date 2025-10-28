@@ -1,0 +1,81 @@
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import Header from './components/Header';
+import Footer from './components/Footer';
+import Home from './pages/Home';
+import AuthModal from './components/AuthModal';
+import { setToken as apiSetToken } from './services/api';
+import { AuthContext } from './context/AuthContext';
+
+export default function App() {
+  const [token, setTokenState] = useState(() => {
+    try {
+      return typeof window !== 'undefined' ? localStorage.getItem('cn_token') : null;
+    } catch (err) {
+      console.warn('localStorage.getItem error', err);
+      return null;
+    }
+  });
+
+  const [modalMode, setModalMode] = useState(null); // 'login' | 'register' | null
+
+  useEffect(() => {
+    try {
+      apiSetToken(token);
+    } catch (err) {
+      console.warn('apiSetToken error', err);
+    }
+  }, [token]);
+
+  const handleSetToken = useCallback((t) => {
+    try {
+      if (t) {
+        try {
+          localStorage.setItem('cn_token', t);
+        } catch (errLocal) {
+          console.warn('localStorage.setItem error', errLocal);
+        }
+        try {
+          apiSetToken(t);
+        } catch (errApi) {
+          console.warn('apiSetToken error', errApi);
+        }
+        setTokenState(t);
+      } else {
+        try {
+          localStorage.removeItem('cn_token');
+        } catch (errLocal) {
+          console.warn('localStorage.removeItem error', errLocal);
+        }
+        try {
+          apiSetToken(null);
+        } catch (errApi) {
+          console.warn('apiSetToken error', errApi);
+        }
+        setTokenState(null);
+      }
+    } catch (err) {
+      console.warn('handleSetToken unexpected error', err);
+    }
+  }, []);
+
+  const contextValue = useMemo(() => ({ token, setToken: handleSetToken }), [token, handleSetToken]);
+
+  return (
+    <AuthContext.Provider value={contextValue}>
+      <div className="app">
+        <Header onOpenAuth={setModalMode} onLogout={() => handleSetToken(null)} />
+        <main className="container">
+          <Home />
+        </main>
+        <Footer />
+        {modalMode && (
+          <AuthModal
+            mode={modalMode}
+            onClose={() => setModalMode(null)}
+            onSuccess={(t) => { handleSetToken(t); setModalMode(null); }}
+          />
+        )}
+      </div>
+    </AuthContext.Provider>
+  );
+}
